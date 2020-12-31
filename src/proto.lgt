@@ -17,9 +17,10 @@
   :- private([gray/0]).
 :- end_protocol.
 
-:- protocol(nic, extends(devicep)).
+:- protocol(nicp, extends(devicep)).
   :- public([]).
 :- end_protocol.
 
 :- protocol(connp, extends(namedp)).
+  :- public([peer/1, bcast/0, mcast/0]).
 :- end_protocol.

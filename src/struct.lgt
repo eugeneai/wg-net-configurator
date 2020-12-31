@@ -19,12 +19,31 @@
 
 :- object(nic(_Name_),
           extends(device),
-          implements(devicep)).
+          implements(nicp)).
   name(_Name_).
   id(X):-name(X). % FIXME: add type prefix
 :- end_object.
 
 :- object(conn,
           extends(element),
-          implements(namedp)).
+          implements(connp)).
+:- end_object.
+
+:- object(ptp(_Peer_),
+          extends(conn)).
+  peer(_Peer_).
+:- end_object.
+
+:- object(ptmp(_Peers_),
+          extends(conn))).
+  peer(P):-
+    lists:member(P,_Peers_).
+:- end_object.
+
+:- object(bcast,
+          extends(conn)).
+:- end_object.
+
+:- object(mcast,
+          extends(conn)).
 :- end_object.
