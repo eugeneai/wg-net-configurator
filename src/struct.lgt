@@ -24,26 +24,30 @@
   id(X):-name(X). % FIXME: add type prefix
 :- end_object.
 
-:- object(conn,
+:- object(conn(_Source_),
           extends(element),
           implements(connp)).
+  source(_Source_).
 :- end_object.
 
-:- object(ptp(_Peer_),
-          extends(conn)).
+:- object(ptp(_Source_,_Peer_),
+          extends(conn(_Source_))).
   peer(_Peer_).
 :- end_object.
 
-:- object(ptmp(_Peers_),
-          extends(conn))).
+:- object(ptmp(_Source_,_Peers_),
+          extends(conn(_Source_)))).
   peer(P):-
     lists:member(P,_Peers_).
 :- end_object.
 
-:- object(bcast,
-          extends(conn)).
+:- object(bcast(_Source_),
+          extends(conn(_Source_))).
+  bcast.
+  mcast.  % FIXME: Really?
 :- end_object.
 
-:- object(mcast,
-          extends(conn)).
+:- object(mcast(_Source_),
+          extends(conn(_Source_))).
+  mcast.
 :- end_object.
