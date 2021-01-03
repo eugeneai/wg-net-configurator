@@ -85,7 +85,7 @@
 	parseip("inet6",IP,IP/128).
 
 	scopepar(X):-
-		member(X, ["secondary","noprefixroute",
+		member(X, ["secondary","noprefixroute","mngtmpaddr",
 				  "global","link","dynamic","tentative"]).
 
 	parsescope(INet, [Scope,Par|I],O, [Scope, Par|T],IFace):-

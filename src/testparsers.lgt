@@ -5,6 +5,7 @@
     :- public([option/1, current_option/1]).
     option(testfile='../testdata/ipas.txt').
     option(testfile_irnok='../testdata/ipas-irnok.txt').
+    option(testfile_center='../testdata/ipas-center.txt').
 	option(cwd=Absolute):-
 		absolute_file_name('./',Absolute).
 	current_option(X):-
@@ -41,4 +42,8 @@
 		config::current_option(testfile_irnok=TestFile),
 		config::open_file(TestFile,Source),
         ipasparser(Source, [], 'root.isclan.ru')::parse.
+    succeeds(test_ip_a_s_parse_center) :-
+		config::current_option(testfile_center=TestFile),
+		config::open_file(TestFile,Source),
+        ipasparser(Source, [], 'center.isclan.ru')::parse.
 :- end_object.
