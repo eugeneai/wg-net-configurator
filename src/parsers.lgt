@@ -54,9 +54,9 @@
 		format('Interface No ~w is ~w\n',[Number, Interface]),
 		parse(hwstate, R2,R3),
 		parseparameters(["mtu","qdisc",
-			"state","group","qlen"], R3,R4),
+			"state","group","qlen","master"], R3,R4),
 		parselink(R4,R5),
-		parseparameters(["brd"],R5,O).
+		parseparameters(["brd","peer","link-netnsid"],R5,O).
 
 	parse(hwstate, [StateSring|I],I):-
 		split_string(StateSring,"<,",">", [""|List]),
@@ -65,7 +65,7 @@
 	parse(setups,[INet,IP|I],O):-
 	    member(INet,["inet","inet6"]),!,
 		parseip(INet, IP, PIP),
-		parseparameters(["brd"],I,["scope"|R]),
+		parseparameters(["brd","peer"],I,["scope"|R]),
 		parsescope(INet, R,R1, Scope,IFace),
 		format("~w: ~w scope ~w ~w\n",[INet,PIP,Scope,IFace]),
 		parseparameters(["valid_lft","preferred_lft"],R1,R2),
@@ -86,7 +86,7 @@
 
 	scopepar(X):-
 		member(X, ["secondary","noprefixroute",
-				  "global","link","dynamic"]).
+				  "global","link","dynamic","tentative"]).
 
 	parsescope(INet, [Scope,Par|I],O, [Scope, Par|T],IFace):-
 		scopepar(Par),!,
@@ -102,21 +102,23 @@
 		parseparameters(List,I,O).
 	parseparameters(_,I,I).
 
-	parselink([Link,MAC|I],I):-
-		check_MAC(MAC),!,
+	parselink([Link,Addr|I],I):-
+		(check_MAC(Addr);check_IP(Addr)),!,
 		split_string(Link,"/","",["link"|T]),
-		link_type(T,MAC).
+		link_type(T,Addr).
 
     parselink([Link|I],O):-
 		parselink([Link,"--:--:--:--:--:--"|I],O).
 
-	link_type([],MAC):-
-		link_type([none],MAC),!.
-	link_type([T],MAC):-
-		format("Link_type=~w\n MAC=~w\n",[T,MAC]).
+	link_type([],Addr):-
+		link_type([none],Addr),!.
+	link_type([T],Addr):-
+		format("Link_type=~w Addr=~w\n",[T,Addr]).
 
 	check_MAC(MAC):-
 		split_string(MAC,":","",[A,B,C,D,E,F]).
+	check_IP(IP):-
+		split_string(IP,".","",[A,B,C,D]).
 
 	hwstate(Parameter):-
 		format("HWS: ~w\n",[Parameter]).

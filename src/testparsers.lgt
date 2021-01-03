@@ -4,6 +4,7 @@
 	:- uses(user,[absolute_file_name/2,open/3]).
     :- public([option/1, current_option/1]).
     option(testfile='../testdata/ipas.txt').
+    option(testfile_irnok='../testdata/ipas-irnok.txt').
 	option(cwd=Absolute):-
 		absolute_file_name('./',Absolute).
 	current_option(X):-
@@ -35,5 +36,9 @@
     succeeds(test_ip_a_s_parse) :-
 		config::current_option(testfile=TestFile),
 		config::open_file(TestFile,Source),
-        ipasparser(Source, [], 'test.isclan.ru')::parse.
+        ipasparser(Source, [], 'fla.isclan.ru')::parse.
+    succeeds(test_ip_a_s_parse_irnok) :-
+		config::current_option(testfile_irnok=TestFile),
+		config::open_file(TestFile,Source),
+        ipasparser(Source, [], 'root.isclan.ru')::parse.
 :- end_object.
