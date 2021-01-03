@@ -42,7 +42,10 @@
 
     parse(ipls,I,O):-
 		parse(ipl,I,R),
-		parse(setups,R,O).
+		parse(setups,R,R1),!,
+		parse(ipls,R1,O).
+
+	parse(ipls,I,I).
 
 	parse(ipl,I,O):-
 		parse(defcol, I, R1, SNumber),
@@ -53,30 +56,44 @@
 		parseparameters(["mtu","qdisc",
 			"state","group","qlen"], R3,R4),
 		parselink(R4,R5),
-		parseparameters(["brd"],R5,R6),
-		O=R6.
+		parseparameters(["brd"],R5,O).
 
 	parse(hwstate, [StateSring|I],I):-
 		split_string(StateSring,"<,",">", [""|List]),
 		forall(member(X,List), hwstate(X)).
 
-	parse(setups,[INet,IP,"scope"|I],O):-
-	    member(INet,["inet","inet6"]),
-		parsescope(INet, I,R1, Scope,IFace),
-		format("~w: ~w scope ~w ~w\n",[INet,IP,Scope,IFace]),
-		parseparameters(["valid_lft","preferred_lft"],R1,R),
-		parse(setups, R,O).
+	parse(setups,[INet,IP|I],O):-
+	    member(INet,["inet","inet6"]),!,
+		parseip(INet, IP, PIP),
+		parseparameters(["brd"],I,["scope"|R]),
+		parsescope(INet, R,R1, Scope,IFace),
+		format("~w: ~w scope ~w ~w\n",[INet,PIP,Scope,IFace]),
+		parseparameters(["valid_lft","preferred_lft"],R1,R2),
+		parse(setups, R2,O).
 	parse(setups, I,I).
 
     parse(defcol, [Def|I], I, Result):-
 		sub_string(Def, Before, 1, 0, ":"),
 		sub_string(Def, 0, Before, 1, Result).
 
-	parsescope("inet", [Scope|I],O, SC,IFace):-
-		(["secondary"|R]=I ->
-		  SC=[Scope, secondary];
-		  R=I,SC=[Scope, primary]),
-		[IFace|O]=R.
+	parseip(_,IPS,IP/Mask):-
+		split_string(IPS,"/","",[IP,MaskS]),
+		atom_number(MaskS,Mask),
+		format("IP: ~w/~w\n",[IP,Mask]),
+		!.
+	parseip("inet",IP,IP/32):-!.
+	parseip("inet6",IP,IP/128).
+
+	scopepar(X):-
+		member(X, ["secondary","noprefixroute",
+				  "global","link","dynamic"]).
+
+	parsescope(INet, [Scope,Par|I],O, [Scope, Par|T],IFace):-
+		scopepar(Par),!,
+		parsescope(INet, [Scope|I],O, [Scope|T],IFace).
+	parsescope("inet", [Scope,IFace|I],I, [Scope], IFace).
+
+	parsescope("inet6", [Scope|I],I, [Scope], '$none').
 
 	parseparameters(List, [Par,ValS|I],O):-
 		member(Par,List),!,
@@ -86,13 +103,20 @@
 	parseparameters(_,I,I).
 
 	parselink([Link,MAC|I],I):-
+		check_MAC(MAC),!,
 		split_string(Link,"/","",["link"|T]),
 		link_type(T,MAC).
+
+    parselink([Link|I],O):-
+		parselink([Link,"--:--:--:--:--:--"|I],O).
 
 	link_type([],MAC):-
 		link_type([none],MAC),!.
 	link_type([T],MAC):-
 		format("Link_type=~w\n MAC=~w\n",[T,MAC]).
+
+	check_MAC(MAC):-
+		split_string(MAC,":","",[A,B,C,D,E,F]).
 
 	hwstate(Parameter):-
 		format("HWS: ~w\n",[Parameter]).

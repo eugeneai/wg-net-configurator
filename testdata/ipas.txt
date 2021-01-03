@@ -6,13 +6,13 @@
        valid_lft forever preferred_lft forever
     inet 127.0.1.1/8 brd 127.255.255.255 scope host secondary lo
        valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
+    inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
 2: irnok: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1420 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/none 
+    link/none
     inet 10.1.1.1/8 brd 10.255.255.255 scope global irnok
        valid_lft forever preferred_lft forever
-    inet6 fe80::10:1:1:1/10 scope link 
+    inet6 fe80::10:1:1:1/10 scope link
        valid_lft forever preferred_lft forever
 3: enp7s0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default qlen 1000
     link/ether b8:70:f4:1d:d9:2c brd ff:ff:ff:ff:ff:ff
@@ -20,5 +20,5 @@
     link/ether 68:a3:c4:f9:e4:0e brd ff:ff:ff:ff:ff:ff
     inet 192.168.43.7/24 brd 192.168.43.255 scope global dynamic noprefixroute wlp6s0
        valid_lft 3473sec preferred_lft 3473sec
-    inet6 fe80::27f6:2c5b:e47f:f47f/64 scope link noprefixroute 
+    inet6 fe80::27f6:2c5b:e47f:f47f/64 scope link noprefixroute
        valid_lft forever preferred_lft forever
